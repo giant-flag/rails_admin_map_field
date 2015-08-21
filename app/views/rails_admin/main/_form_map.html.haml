@@ -78,13 +78,13 @@
   = "##{field.dom_name} label {width: auto;display: inline;}"
   = "##{field.dom_name} img {max-width: none;}"
 
-%div.ramf-map-container{:id => field.dom_name, :style => "width:#{field.map_width}px; height:#{field.map_height}px"}
+%div.ramf-map-container{:id => field.dom_name, :style => "margin: 20px 0; padding: 0; height: #{field.map_height}px; float: left; width: 100%;"}
 %div.control-group
   = form.send :label, field.name, :class => "control-label"
   %div.controls
-    = form.send :text_field, field.name, :id => field.latitude_dom_name
+    = form.send :text_field, field.name, :id => field.latitude_dom_name, :class => "control-group"
 
 %div.control-group
   = form.send :label, field.longitude_field, :class => "control-label"
   %div.controls
-    = form.send :text_field, field.longitude_field, :id => field.longitude_dom_name
+    = form.send :text_field, field.longitude_field, :id => field.longitude_dom_name, :class => "control-group"

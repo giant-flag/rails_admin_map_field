@@ -12,9 +12,9 @@ Usage
 - map resizing in config
 - map marker draggable
 - custom label for latitude field
+- responsive map width
 ```ruby
 field :latitude, :map do
-  map_width 600
   map_height 400
   map_label "Map"
 end
@@ -26,7 +26,7 @@ end
 rails_admin_map_field expects that the model will have two attributes, one for latitude and one for longitude of the point represented. To enable rails_admin_map_field, add the following to your `Gemfile`:
 
 ```ruby
-gem "rails_admin_map_field", :github => "sudosu/rails_admin_map_field"
+gem "rails_admin_map_field", :github => "git://github.com/dkobia/rails_admin_map_field.git"
 ```
 
 Then, add in your `config/initializers/rails_admin.rb` initializer:
@@ -55,7 +55,6 @@ For different configurations, rails_admin_map_field can be configured with the f
 - `google_api_key` - if you use a Google Maps API Key, it can be specified here.
 - `default_latitude` - the latitude to center the map shown on if the latitude field is blank. Defaults to 40.711417, the latitude of New Jersey City, NJ, USA
 - `default_longitude` - the longitude used if the longitude field is blank. Defaults to 74.0647, the longitude of New Jersey City, NJ, USA.
-- `map_width` - map width in px, eg: '400'
 - `map_height` - map height
 - `map_label` - label for map field. Defaults to "Map"
 
