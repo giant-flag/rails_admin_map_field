@@ -82,9 +82,9 @@
 %div.control-group
   = form.send :label, field.name, :class => "control-label"
   %div.controls
-    = form.send :text_field, field.name, :id => field.latitude_dom_name, :class => "control-group"
+    = form.send :text_field, field.name, :id => field.latitude_dom_name, :class => "form-control"
 
 %div.control-group
   = form.send :label, field.longitude_field, :class => "control-label"
   %div.controls
-    = form.send :text_field, field.longitude_field, :id => field.longitude_dom_name, :class => "control-group"
+    = form.send :text_field, field.longitude_field, :id => field.longitude_dom_name, :class => "form-control"
