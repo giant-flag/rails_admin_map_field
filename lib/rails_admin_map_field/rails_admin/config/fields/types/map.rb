@@ -3,13 +3,17 @@ module RailsAdmin::Config::Fields::Types
     RailsAdmin::Config::Fields::Types::register(:map, self)
 
     def allowed_methods
-      [@name, longitude_field]
+      [@name, longitude_field, gplace_field]
     end
 
     # THe name of the corresponding longitude field to match the latitude field
     # in this object.
     register_instance_option(:longitude_field) do
       "longitude"
+    end
+
+    register_instance_option(:gplace_field) do
+      "gplace"
     end
 
     register_instance_option(:address_field) do
@@ -84,6 +88,10 @@ module RailsAdmin::Config::Fields::Types
 
     def longitude_dom_name
       form_tag_id(bindings[:form].object_name, longitude_field)
+    end
+
+    def gplace_dom_name
+      form_tag_id(bindings[:form].object_name, gplace_field)
     end
 
     def address_dom_name
