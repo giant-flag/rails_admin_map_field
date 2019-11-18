@@ -1,0 +1,28 @@
+<script>
+  function initMapField() {
+    jQuery(function() {
+      var latitude = <%= field.latitude %>;
+      var longitude = <%= field.longitude %>;
+      var latlng = new google.maps.LatLng(latitude, longitude);
+
+      var myOptions = {
+        zoom: <%= field.default_zoom_level %>,
+        center: latlng,
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
+        scrollwheel: false
+      };
+
+      var map = new google.maps.Map(document.getElementById("map"), myOptions);
+
+      var marker = new google.maps.Marker({
+        position: latlng,
+        map: map
+      });
+    });
+  }
+</script>
+
+<%= javascript_include_tag "https://maps.googleapis.com/maps/api/js?key=#{field.google_api_key}&sensor=false&callback=initMapField" %>
+
+<div id="map" style="margin: 20px 0; padding: 0; height: <%= field.map_height %>px; width: 100%;">
+</div>

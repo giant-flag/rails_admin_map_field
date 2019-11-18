@@ -70,6 +70,14 @@ module RailsAdmin::Config::Fields::Types
       200
     end
 
+    register_instance_option(:formatted_value) do
+      return value if bindings[:controller].action_name != "show"
+
+      render(
+        bindings[:view].render(partial: "rails_admin/main/map", locals: { field: self })
+      )
+    end
+
     def sanitized_object_name(object_name)
       object_name.gsub(/]\[|[^-a-zA-Z0-9:.]/,"_").sub(/_$/,"")
     end
@@ -104,6 +112,14 @@ module RailsAdmin::Config::Fields::Types
 
     def state_dom_name
       form_tag_id(bindings[:form].object_name, state_field)
+    end
+
+    def latitude
+      bindings[:object][name]
+    end
+
+    def longitude
+      bindings[:object][longitude_field]
     end
   end
 end
