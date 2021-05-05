@@ -81,5 +81,9 @@ module RailsAdmin::Config::Fields::Types
     def shape
       bindings[:object][shape_field]
     end
+
+    def geo_json
+      RGeo::GeoJSON.encode(bindings[:object][name])
+    end
   end
 end

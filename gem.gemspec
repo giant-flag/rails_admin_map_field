@@ -3,6 +3,7 @@
 Gem::Specification.new do |s|
   s.add_runtime_dependency("rails", ">= 3.0.0")
   s.add_runtime_dependency("rails_admin")
+  s.add_runtime_dependency("rgeo-geojson")
 
   s.add_development_dependency("devise", ">= 1.1")
   s.add_development_dependency("rspec-rails", ">= 2.4")
@@ -10,7 +11,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency("yard", ">= 0.6")
 
   s.name              = "rails_admin_map_field"
-  s.version           = "0.0.3.machipla1"
+  s.version           = "0.0.4"
   s.platform          = Gem::Platform::RUBY
   s.authors           = ["Jason Langenauer","Jules Laplace"]
   s.email             = ["jason@jasonlangenauer.com","jules@okfoc.us"]
