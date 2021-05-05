@@ -83,7 +83,12 @@ module RailsAdmin::Config::Fields::Types
     end
 
     def geo_json
-      RGeo::GeoJSON.encode(bindings[:object][name])
+      puts name
+      puts bindings[:object].inspect
+      puts bindings[:object][name]
+      a = RGeo::GeoJSON.encode(bindings[:object][name])
+      puts a.inspect
+      a
     end
   end
 end
