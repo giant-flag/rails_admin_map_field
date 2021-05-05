@@ -15,7 +15,6 @@
 
       var map = new google.maps.Map(document.getElementById("#{field.dom_name}"), myOptions);
 
-
       var locations = {
             "type": "FeatureCollection",
             "features": [
@@ -23,6 +22,25 @@
             ]
         };
       map.data.addGeoJson(locations)
+
+      var shape = [];
+      var ID = 0;
+      for (var i = 0; i < map.data.getFeatureById(ID).getGeometry().getLength(); i++) {
+        var shapeData = map.data.getFeatureById(ID).getGeometry().getAt(i).getArray();
+        shape.push(shapeData);
+      }
+
+      nowEditingShape = new google.maps.Polygon({
+        paths: shape,
+        strokeColor: '#FF0000',
+        strokeOpacity: 0.8,
+        strokeWeight: 2,
+        fillColor: '#FF0000',
+        fillOpacity: 0.35,
+      editable: true
+      });
+      map.data.remove(map.data.getFeatureById(ID));
+      nowEditingShape.setMap(map);
 
 
       google.maps.event.addListener(map, 'click', function(e) {
