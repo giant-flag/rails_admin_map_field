@@ -22,10 +22,11 @@
                { "type": "Feature", "properties": { "shape": "Polygon", "id": "shape_feature", "category": "default" }, "editable": true, "geometry": #{ raw field.geo_json }}
             ]
         };
-      map.data.addGeoJson(locations)
+      
 
       var shape = [];
       var ID = 'shape_feature';
+      map.data.addGeoJson(locations, ID)
       for (var i = 0; i < map.data.getFeatureById(ID).getGeometry().getLength(); i++) {
         var shapeData = map.data.getFeatureById(ID).getGeometry().getAt(i).getArray();
         shape.push(shapeData);
