@@ -1,8 +1,8 @@
 :javascript
   function initShapeField() {
     jQuery(function(){
-      var latitude = #{form.object.send(field.name) || field.default_latitude};
-      var longitude = #{form.object.send(field.longitude_field) || field.default_longitude};
+      var latitude = #{field.default_latitude};
+      var longitude = #{field.default_longitude};
       var latlng = new google.maps.LatLng(latitude, longitude);
       var geocoder = new google.maps.Geocoder();
 
@@ -19,7 +19,7 @@
       var locations = {
             "type": "FeatureCollection",
             "features": [
-               { "type": "Feature", "properties": { "shape": "Polygon", "name": "Unnamed Layer", "category": "default" }, "geometry": <%= raw field.geo_json %>}
+               { "type": "Feature", "properties": { "shape": "Polygon", "name": "Unnamed Layer", "category": "default" }, "editable": true, "geometry": <%= raw field.geo_json %>}
             ]
         };
       map.data.addGeoJson(locations)
