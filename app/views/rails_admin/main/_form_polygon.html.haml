@@ -40,10 +40,10 @@
         updateLocation(e.latLng);
       });
 
-      jQuery("##{field.address_dom_name},##{field.city_dom_name},##{field.state_dom_name}").on("keyup", function(){
-        clearTimeout($.data(this, 'timer'));
-        $(this).data('timer', setTimeout(processAddress, 1000));
-      });
+      -# jQuery("##{field.address_dom_name},##{field.city_dom_name},##{field.state_dom_name}").on("keyup", function(){
+      -#   clearTimeout($.data(this, 'timer'));
+      -#   $(this).data('timer', setTimeout(processAddress, 1000));
+      -# });
 
       -# function processAddress() {
       -#   // geocode based on this location
@@ -75,8 +75,8 @@
         //marker.setPosition(location);
         map.setCenter(location);
 
-        jQuery("##{field.latitude_dom_name}").val(location.lat());
-        jQuery("##{field.longitude_dom_name}").val(location.lng());
+        -# jQuery("##{field.latitude_dom_name}").val(location.lat());
+        -# jQuery("##{field.longitude_dom_name}").val(location.lng());
       }
 
     });
@@ -92,9 +92,9 @@
 %div.control-group
   = form.send :label, field.name, :class => "control-label"
   %div.controls
-    = form.send :text_field, field.name, :id => field.latitude_dom_name, :class => "form-control"
+    = form.send :text_field, field.name, :id => field.shape_dom_name, :class => "form-control"
 
-%div.control-group
-  = form.send :label, field.longitude_field, :class => "control-label"
-  %div.controls
-    = form.send :text_field, field.longitude_field, :id => field.longitude_dom_name, :class => "form-control"
+-# %div.control-group
+-#   = form.send :label, field.longitude_field, :class => "control-label"
+-#   %div.controls
+-#     = form.send :text_field, field.longitude_field, :id => field.longitude_dom_name, :class => "form-control"
