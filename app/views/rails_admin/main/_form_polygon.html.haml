@@ -19,13 +19,13 @@
       var locations = {
             "type": "FeatureCollection",
             "features": [
-               { "type": "Feature", "properties": { "shape": "Polygon", "name": "Unnamed Layer", "category": "default" }, "editable": true, "geometry": #{ raw field.geo_json }}
+               { "type": "Feature", "properties": { "shape": "Polygon", "id": "shape_feature", "category": "default" }, "editable": true, "geometry": #{ raw field.geo_json }}
             ]
         };
       map.data.addGeoJson(locations)
 
       var shape = [];
-      var ID = 1;
+      var ID = 'shape_feature';
       for (var i = 0; i < map.data.getFeatureById(ID).getGeometry().getLength(); i++) {
         var shapeData = map.data.getFeatureById(ID).getGeometry().getAt(i).getArray();
         shape.push(shapeData);
