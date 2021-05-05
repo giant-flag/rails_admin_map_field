@@ -13,7 +13,7 @@ module RailsAdmin::Config::Fields::Types
     end
 
     register_instance_option(:partial) do
-      :form_map
+      :form_polygon
     end
 
     register_instance_option(:map_label) do
