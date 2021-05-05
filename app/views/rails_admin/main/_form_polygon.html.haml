@@ -25,7 +25,7 @@
       map.data.addGeoJson(locations)
 
       var shape = [];
-      var ID = 0;
+      var ID = 1;
       for (var i = 0; i < map.data.getFeatureById(ID).getGeometry().getLength(); i++) {
         var shapeData = map.data.getFeatureById(ID).getGeometry().getAt(i).getArray();
         shape.push(shapeData);
