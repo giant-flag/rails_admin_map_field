@@ -1,4 +1,5 @@
 :javascript
+  var map = {};
   function initShapeField() {
     jQuery(function(){
       var latitude = #{field.default_latitude}; 
@@ -13,7 +14,7 @@
         scrollwheel: false
       };
 
-      var map = new google.maps.Map(document.getElementById("#{field.dom_name}"), myOptions);
+      map = new google.maps.Map(document.getElementById("#{field.dom_name}"), myOptions);
 
       var locations = {
             "type": "FeatureCollection",
