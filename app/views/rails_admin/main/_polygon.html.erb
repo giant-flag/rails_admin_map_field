@@ -1,13 +1,13 @@
 <script>
   function initShapeField() {
     jQuery(function() {
-      // var latitude = <%#= field.latitude %>;
-      // var longitude = <%#= field.longitude %>;
-      // var latlng = new google.maps.LatLng(latitude, longitude);
+      var latitude = #{form.object.send(field.name) || field.default_latitude};
+      var longitude = #{form.object.send(field.longitude_field) || field.default_longitude};
+      var latlng = new google.maps.LatLng(latitude, longitude);
 
       var myOptions = {
         zoom: <%= field.default_zoom_level %>,
-        // center: latlng,
+        center: latlng,
         mapTypeId: google.maps.MapTypeId.ROADMAP,
         scrollwheel: false
       };
