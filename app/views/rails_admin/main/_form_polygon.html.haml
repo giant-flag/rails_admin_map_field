@@ -19,7 +19,7 @@
       var locations = {
             "type": "FeatureCollection",
             "features": [
-               { "type": "Feature", "properties": { "shape": "Polygon", "name": "Unnamed Layer", "category": "default" }, "geometry": <%= raw field.geo_json.to_json %>}
+               { "type": "Feature", "properties": { "shape": "Polygon", "name": "Unnamed Layer", "category": "default" }, "geometry": <%= raw field.geo_json %>}
             ]
         };
       map.data.addGeoJson(locations)
