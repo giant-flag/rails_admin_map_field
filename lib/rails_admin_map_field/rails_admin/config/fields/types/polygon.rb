@@ -31,12 +31,12 @@ module RailsAdmin::Config::Fields::Types
 
     # Latitude value to display in the map if the latitude attribute is nil
     register_instance_option(:default_latitude) do
-      40.711417 # Latitude of Jersey City, NJ
+      -32.2988067
     end
 
     # Longitude value to display if the longitude attribute is nil
     register_instance_option(:default_longitude) do
-      74.0647 # Longitude of Jersey City, NJ
+      24.5730242
     end
 
     # Default zoom level of the map
@@ -82,13 +82,17 @@ module RailsAdmin::Config::Fields::Types
       bindings[:object][shape_field]
     end
 
+    def center
+      get_geometry.centroid
+    end
+
     def geo_json
-      puts name
-      puts bindings[:object].inspect
-      puts bindings[:object][name]
-      a = RGeo::GeoJSON.encode(bindings[:object][name])
-      puts a.inspect
-      a.to_json
+      get_geometry.to_json
+    end
+
+    private
+    def get_geometry
+      @shape ||= RGeo::GeoJSON.encode(bindings[:object][name])
     end
   end
 end
