@@ -2,15 +2,15 @@
   var map = {};
   function initShapeField() {
     jQuery(function(){
-      var latitude = #{field.default_latitude}; 
-      var longitude = #{field.default_longitude}; 
+      var latitude = #{field.center.x || field.default_latitude}; 
+      var longitude = #{ field.center.y || field.default_longitude}; 
       var latlng = new google.maps.LatLng(latitude, longitude);
       var geocoder = new google.maps.Geocoder();
 
       var myOptions = {
         zoom: #{field.default_zoom_level},
         center: latlng,
-        mapTypeId: google.maps.MapTypeId.SATELLITE,
+        mapTypeId: google.maps.MapTypeId.#{field.map_type},
         scrollwheel: false
       };
 

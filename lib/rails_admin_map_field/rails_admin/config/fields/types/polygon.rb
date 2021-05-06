@@ -29,6 +29,10 @@ module RailsAdmin::Config::Fields::Types
       nil
     end
 
+    register_instance_option(:map_type) do
+      'ROADMAP'
+    end
+
     # Latitude value to display in the map if the latitude attribute is nil
     register_instance_option(:default_latitude) do
       -32.2988067
