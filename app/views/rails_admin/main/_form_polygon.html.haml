@@ -1,9 +1,10 @@
 :javascript
   var map = {};
+  var nowEditingShape = {};
   function initShapeField() {
     jQuery(function(){
-      var latitude = #{field.center.x || field.default_latitude}; 
-      var longitude = #{ field.center.y || field.default_longitude}; 
+      var latitude = #{field.center.y}; 
+      var longitude = #{field.center.x}; 
       var latlng = new google.maps.LatLng(latitude, longitude);
       var geocoder = new google.maps.Geocoder();
 
@@ -19,18 +20,20 @@
       var locations = {
             "type": "FeatureCollection",
             "features": [
-               { "type": "Feature", "id": "shape_feature", "properties": { "shape": "Polygon", "category": "default" }, "editable": true, "geometry": #{ raw field.geo_json }}
+               { "type": "Feature", "id": "#{field.dom_name}", "properties": { "shape": "Polygon", "category": "default" }, "editable": true, "geometry": #{ raw field.geo_json }}
             ]
         };
       
-
+      console.log(locations);
       var shape = [];
-      var ID = 'shape_feature';
+      var ID = '#{field.dom_name}';
       map.data.addGeoJson(locations, ID)
       for (var i = 0; i < map.data.getFeatureById(ID).getGeometry().getLength(); i++) {
         var shapeData = map.data.getFeatureById(ID).getGeometry().getAt(i).getArray();
         shape.push(shapeData);
       }
+
+      console.log(JSON.stringify(shape));
 
       map.data.setControls(['Polygon']);
       map.data.setStyle({
@@ -55,13 +58,58 @@
         updateLocation(e.latLng);
       });
 
-      google.maps.event.addListener(marker,'dragend',function(e) {
+      google.maps.event.addListener(nowEditingShape,'dragend',function(e) {
         updateLocation(e.latLng);
       });
 
+      google.maps.event.addListener(nowEditingShape.getPath(), 'set_at', showArrays);
+
+    google.maps.event.addListener(nowEditingShape.getPath(), 'insert_at', showArrays);
+
+function showArrays(event) {
+  // Since this polygon has only one path, we can call getPath() to return the
+  // MVCArray of LatLngs.
+//  const polygon = this;
+  //console.log(polygon.getArray());
+  console.log(event);
+  const vertices = this;//polygon.getPath();
+  let contentString =
+    "<b>Bermuda Triangle polygon</b><br>"
+   /*  "Clicked location: <br>" +
+    event.latLng.lat() +
+    "," +
+    event.latLng.lng() +
+    "<br>"; */
+
+  // Iterate over the vertices.
+  for (let i = 0; i < vertices.getLength(); i++) {
+    const xy = vertices.getAt(i);
+    contentString +=
+      "<br>" + "Coordinate " + i + ":<br>" + xy.lat() + "," + xy.lng();
+  }
+  // Replace the info window's content and position.
+  infoWindow.setContent(contentString);
+  infoWindow.setPosition(map.center);
+  infoWindow.open(map);
+}
+      google.maps.event.addListener(nowEditingShape,'click',function(e) {
+        console.log(e);
+        updateLocation(e.latLng);
+      });
+
+      google.maps.event.addListener(nowEditingShape,'bounds_changed', function(e) {
+        console.log('bounds_changed');
+        console.log(e);
+      });
+      nowEditingShape.addListener('bounds_changed', function(e) {
+        console.log('nowEditingShape.bounds_changed');
+        console.log(e);
+      });
 
       function updateLocation(location) {
-        //marker.setPosition(location);
+        console.log(nowEditingShape);
+        jQuery("##{field.shape_dom_name}").val(location.lat());
+
         map.setCenter(location);
       }
 

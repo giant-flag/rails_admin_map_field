@@ -1,6 +1,7 @@
 module RailsAdmin::Config::Fields::Types
   class Polygon < RailsAdmin::Config::Fields::Base
     RailsAdmin::Config::Fields::Types::register(:polygon, self)
+    
 
     def allowed_methods
       [@name, shape_field]
@@ -61,6 +62,7 @@ module RailsAdmin::Config::Fields::Types
     register_instance_option(:formatted_value) do
       return value if bindings[:controller].action_name != "show"
 
+      puts self.inspect
       render(
         bindings[:view].render(partial: "rails_admin/main/polygon", locals: { field: self })
       )
@@ -86,8 +88,13 @@ module RailsAdmin::Config::Fields::Types
       bindings[:object][shape_field]
     end
 
-    def center
-      get_geometry.centroid
+    def center     
+      if bindings[:object][name]
+        bindings[:object][name].centroid
+      else
+        factory = RGeo::Geographic.spherical_factory(:srid => 4326)
+        factory.point(default_latitude,default_longitude)
+      end
     end
 
     def geo_json
@@ -97,6 +104,7 @@ module RailsAdmin::Config::Fields::Types
     private
     def get_geometry
       @shape ||= RGeo::GeoJSON.encode(bindings[:object][name])
+      @shape
     end
   end
 end

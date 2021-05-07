@@ -47,18 +47,23 @@ module RailsAdmin::Config::Fields::Types
 
     # Latitude value to display in the map if the latitude attribute is nil
     register_instance_option(:default_latitude) do
-      40.711417 # Latitude of Jersey City, NJ
+      -32.2988067
     end
 
     # Longitude value to display if the longitude attribute is nil
     register_instance_option(:default_longitude) do
-      74.0647 # Longitude of Jersey City, NJ
+      24.5730242
     end
 
     # Default zoom level of the map
     register_instance_option(:default_zoom_level) do
       8
     end
+
+    register_instance_option(:map_type) do
+      'ROADMAP'
+    end
+
 
     # Map heigth in px
     register_instance_option(:map_width) do

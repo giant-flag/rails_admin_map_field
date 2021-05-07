@@ -6,9 +6,9 @@
       var latlng = new google.maps.LatLng(latitude, longitude);
 
       var myOptions = {
-        zoom: <%= field.default_zoom_level %>,
+        zoom: <%= field.default_zoom_level%>,
         center: latlng,
-        mapTypeId: google.maps.MapTypeId.SATELLITE,
+        mapTypeId: google.maps.MapTypeId.<%= field.map_type %>,
         scrollwheel: false
       };
 
