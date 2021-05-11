@@ -61,8 +61,6 @@ module RailsAdmin::Config::Fields::Types
 
     register_instance_option(:formatted_value) do
       return value if bindings[:controller].action_name != "show"
-
-      puts self.inspect
       render(
         bindings[:view].render(partial: "rails_admin/main/polygon", locals: { field: self })
       )
@@ -91,9 +89,9 @@ module RailsAdmin::Config::Fields::Types
     def center     
       if bindings[:object][name]
         bindings[:object][name].centroid
-      else
-        factory = RGeo::Geographic.spherical_factory(:srid => 4326)
-        factory.point(default_latitude,default_longitude)
+      # else
+      #   factory = RGeo::Geographic.spherical_factory(:srid => 4326)
+      #   factory.point(default_latitude,default_longitude)
       end
     end
 
