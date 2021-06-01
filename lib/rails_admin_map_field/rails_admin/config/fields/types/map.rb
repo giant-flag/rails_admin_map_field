@@ -120,11 +120,18 @@ module RailsAdmin::Config::Fields::Types
     end
 
     def latitude
-      bindings[:object][name]
+      bindings[:object][name].x
     end
 
     def longitude
-      bindings[:object][longitude_field]
+      bindings[:object][name].y
+    end
+
+    def geometry
+      bindings[:object][name]
+    end
+    def json
+      RGeo::GeoJSON.encode(bindings[:object][name])
     end
   end
 end
