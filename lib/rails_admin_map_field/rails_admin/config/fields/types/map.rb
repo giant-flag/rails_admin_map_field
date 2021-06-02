@@ -120,11 +120,11 @@ module RailsAdmin::Config::Fields::Types
     end
 
     def latitude
-      bindings[:object][name].x
+      bindings[:object][name].y
     end
 
     def longitude
-      bindings[:object][name].y
+      bindings[:object][name].x
     end
 
     def geometry
