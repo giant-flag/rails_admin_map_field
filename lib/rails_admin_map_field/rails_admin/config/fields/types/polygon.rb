@@ -5,7 +5,7 @@ module RailsAdmin::Config::Fields::Types
 
 
     def parse_value(value)
-      geo_factory = RGeo::Cartesian.simple_factory(srid: 4326)
+      geo_factory =  RGeo::Geos.factory(srid: 4326)
       RGeo::GeoJSON.decode(value, geo_factory: geo_factory, json_parser: :json)
     end
 
