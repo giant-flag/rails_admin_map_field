@@ -52,7 +52,7 @@
       var locations = {
             "type": "FeatureCollection",
             "features": [
-                { "type": "Feature", "id": "#{field.dom_name}", "properties": { "shape": "Polygon", "category": "default" }, "editable": true, "geometry": #{ raw field.geo_json }}
+                { "type": "Feature", "id": "#{field.dom_name}#{field.record_id}", "properties": { "shape": "Polygon", "category": "default" }, "editable": true, "geometry": #{ raw field.geo_json }}
             ]
           };
       if (locations.features[0].geometry) map.data.addGeoJson(locations)
@@ -384,7 +384,7 @@
     });
   } 
 
-= javascript_include_tag ("https://maps.googleapis.com/maps/api/js?key=#{field.google_api_key}&sensor=false&libraries=geometry,drawing&&callback=initShapeField")
+= javascript_include_tag ("https://maps.googleapis.com/maps/api/js?key=#{field.google_api_key}&libraries=geometry,drawing&&callback=initShapeField")
 
 %style
   = "##{field.dom_name} label {width: auto;display: inline;}"

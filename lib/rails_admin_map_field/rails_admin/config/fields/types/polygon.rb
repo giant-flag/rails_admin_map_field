@@ -93,6 +93,10 @@ module RailsAdmin::Config::Fields::Types
       form_tag_id(bindings[:form].object_name, shape_field)
     end
 
+    def record_id
+      bindings[:object][:id]
+    end
+
     def shape
       bindings[:object][shape_field]
     end
