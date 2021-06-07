@@ -1,8 +1,38 @@
 :javascript
-  var map = {};
-  var nowEditingShape = {};
   function initShapeField() {
     jQuery(function(){
+   
+      // this will fill with map data as you import it from geojson or draw
+      var features = {
+        polygons: [],
+        lines: [],
+        markers: []
+      };
+
+      // set default drawing styles
+      var styles = {
+        polygon: {
+          fillColor: '#00ff80',
+          fillOpacity: 0.3,
+          strokeColor: '#008840',
+          strokeWeight: 1,
+          clickable: true,
+          editable: true,
+          zIndex: 1
+        },
+        polyline: {
+          strokeColor: '#ffff00',
+          strokeWeight: 3,
+          clickable: true,
+          editable: true,
+          zIndex: 2
+        },
+        marker: {
+          clickable: true,
+          draggable: true,
+          zIndex: 3
+        }
+      }
 
       var latitude = #{field.center.y}; 
       var longitude = #{field.center.x}; 
@@ -15,6 +45,8 @@
         mapTypeId: google.maps.MapTypeId.#{field.map_type},
         scrollwheel: false
       };
+
+      var map = {};
 
       map = new google.maps.Map(document.getElementById("#{field.dom_name}"), myOptions);
 
@@ -52,58 +84,17 @@
       var locations = {
             "type": "FeatureCollection",
             "features": [
-                { "type": "Feature", "id": "#{field.dom_name}#{field.record_id}", "properties": { "shape": "Polygon", "category": "default" }, "editable": true, "geometry": #{ raw field.geo_json }}
+                { 
+                  "type": "Feature", 
+                  "id": "#{field.dom_name}#{field.record_id}", 
+                  "properties": { "shape": "Polygon", "category": "default" }, 
+                  "editable": true, 
+                  "geometry": #{ raw field.geo_json }
+                }
             ]
           };
+
       if (locations.features[0].geometry) map.data.addGeoJson(locations)
-   
-      //  nowEditingShape = new google.maps.Polygon({
-      //     paths: shape,
-      //     strokeColor: '#FF0000',
-      //     strokeOpacity: 0.8,
-      //     strokeWeight: 2,
-      //     fillColor: '#FF0000',
-      //     fillOpacity: 0.35,
-      //   editable: true
-      //   });
-      //   map.data.remove(map.data.getFeatureById(ID));
-      //   nowEditingShape.setMap(map);
-
-
-      // google.maps.event.addListener(map, 'click', function(e) {
-      //     updateLocation(e.latLng);
-      // });
-
-      // google.maps.event.addListener(nowEditingShape,'dragend',function(e) {
-      //   updateLocation(e.latLng);
-      // });
-
-      // if (nowEditingShape.getPath()) {
-      //   google.maps.event.addListener(nowEditingShape.getPath(), 'set_at', showArrays);
-      //   google.maps.event.addListener(nowEditingShape.getPath(), 'insert_at', showArrays);
-      // }
-
-
-      // google.maps.event.addListener(nowEditingShape,'click',function(e) {
-      //   console.log(e);
-      //   updateLocation(e.latLng);
-      // });
-
-      // google.maps.event.addListener(nowEditingShape,'bounds_changed', function(e) {
-      //   console.log('bounds_changed');
-      //   console.log(e);
-      // });
-      // nowEditingShape.addListener('bounds_changed', function(e) {
-      //   console.log('nowEditingShape.bounds_changed');
-      //   console.log(e);
-      // });
-
-      function updateLocation(location) {
-        console.log(nowEditingShape);
-        jQuery("##{field.shape_dom_name}").val(location.lat());
-
-        map.setCenter(location);
-      }
 
       infoWindow = new google.maps.InfoWindow();
       const locationButton = document.createElement("button");
@@ -135,254 +126,180 @@
           handleLocationError(false, infoWindow, map.getCenter());
         }
       });
-    });
-  }
-
-  function showArrays(event) {
-    // Since this polygon has only one path, we can call getPath() to return the
-    // MVCArray of LatLngs.
-    //  const polygon = this;
-    //console.log(polygon.getArray());
-    console.log(event);
-    const vertices = this;//polygon.getPath();
-    let shape = []
-      
-
-    // Iterate over the vertices.
-    for (let i = 0; i < vertices.getLength(); i++) {
-      const xy = vertices.getAt(i);
-      shape.push([xy]) ;
-    }
-    // Replace the info window's content and position.
-    //console.log(vertices);
-    console.log(JSON.stringify(shape));
-
-    jQuery("##{field.shape_dom_name}").val(JSON.stringify(shape));
-
-    console.log(map.center);
-  }
-  // GeoJSON containing previously stored data (optional) 
-  var imported = {
-    type: "FeatureCollection",
-    features: [{
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          -73.985603, 40.748429
-        ],
-      },
-      properties: {
-        activity: "Entry",
-      }
-    }, ]
-  };
-
-  // this will fill with map data as you import it from geojson or draw
-  var features = {
-    polygons: [],
-    lines: [],
-    markers: []
-  };
-
-  // set default drawing styles
-  var styles = {
-    polygon: {
-      fillColor: '#00ff80',
-      fillOpacity: 0.3,
-      strokeColor: '#008840',
-      strokeWeight: 1,
-      clickable: true,
-      editable: true,
-      zIndex: 1
-    },
-    polyline: {
-      strokeColor: '#ffff00',
-      strokeWeight: 3,
-      clickable: true,
-      editable: true,
-      zIndex: 2
-    },
-    marker: {
-      clickable: true,
-      draggable: true,
-      zIndex: 3
-    }
-  }
-
-  // this function gets called when GeoJSON gets loaded
-  function featureAdded(e) {
-    switch (e.feature.getGeometry().getType()) {
-      case 'Polygon':
-        addFeature('Polygon', e.feature.getGeometry().getAt(0).getArray());
-        break;
-      case 'LineString':
-        addFeature('Polyline', e.feature.getGeometry().getArray());
-        break;
-      case 'Point':
-        addFeature('Point', e.feature.getGeometry().get());
-    }
-    map.data.remove(e.feature);
-  }
-
-  function addFeature(type, path) {
-    switch (type) {
-      case 'Polygon':
-        var polygon = new google.maps.Polygon(styles.polygon);
-        polygon.setPath(path);
-
-        // listeners for detecting geometry changes
-        polygon.getPath().addListener('insert_at', someFunction)
-        polygon.getPath().addListener('set_at', someFunction);
-        polygon.getPath().addListener('remove_at', someFunction);
-        polygon.getPath().addListener('dragend', someFunction);
-
-        // delete vertex using right click
-        polygon.addListener('rightclick', function(e) {
-          if (e.vertex == undefined) return;
-          if (polygon.getPath().getLength() == 3) {
-            polygon.setMap(null);
-            features.polygons = features.polygons.filter(isValid);
-          } else {
-            polygon.getPath().removeAt(e.vertex);
-            outputAsGeoJSON();
-          }
-        });
-
-        // add it to our list of features
-        features.polygons.push(polygon);
-
-        // and display it on the map
-        polygon.setMap(map);
-        break;
-
-      case 'Polyline':
-        var line = new google.maps.Polyline(styles.polyline);
-        line.setPath(path);
-
-        line.getPath().addListener('insert_at', someOtherFunction);
-        line.getPath().addListener('set_at', someOtherFunction);
-        line.getPath().addListener('remove_at', someOtherFunction);
-        line.getPath().addListener('dragend', someOtherFunction);
-
-        // allow right-click vertex deletion
-        line.addListener('rightclick', function(e) {
-          if (e.vertex == undefined) return;
-          if (line.getPath().getLength() == 2) {
-            line.setMap(null);
-            features.lines = features.lines.filter(isValid);
-          } else {
-            line.getPath().removeAt(e.vertex);
-            outputAsGeoJSON();
-          }
-        });
-
-        // add it to our list of features
-        features.lines.push(line);
-
-        // and display it on the map
-        line.setMap(map);
-        break;
-
-      case 'Point':
-        var marker = new google.maps.Marker(styles.marker);
-        marker.setPosition(path);
-
-        // make a splashy entrance
-        marker.setAnimation(google.maps.Animation.DROP);
-
-        // detect modifications
-        marker.addListener('drag', function(e) {
-          // unnecessary bouncing just to throw you off
-          marker.setAnimation(google.maps.Animation.BOUNCE);
-        });
-        marker.addListener('dragend', function(e) {
-          // make the bouncing stop
-          marker.setAnimation(null);
-        })
-
-        // allow right-click deletion
-        marker.addListener('rightclick', function(e) {
-          marker.setMap(null);
-          features.markers = features.markers.filter(isValid);
-          outputAsGeoJSON();
-        });
-
-        // add it to our list of features
-        features.markers.push(marker);
-
-        // and display it on the map
-        marker.setMap(map);
-        break;
-    }
     
-    outputAsGeoJSON();
-  }
 
-  function someFunction(e) {
-    console.log(e, this);
-    outputAsGeoJSON()
-  }
+      // GeoJSON containing previously stored data (optional) 
+      var imported = {
+        type: "FeatureCollection",
+        features: [{
+          "type": "Feature",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [
+              -73.985603, 40.748429
+            ],
+          },
+          properties: {
+            activity: "Entry",
+          }
+        }, ]
+      };
 
-
-  // utility function for reuse any time someone right clicks
-  function isValid(f) {
-    return f.getMap() != null;
-  }
-
-  function polygonFromMyLocation() {
-   
-  }
-
-  function handleLocationError(browserHasGeolocation, infoWindow, pos) {
-    infoWindow.setPosition(pos);
-    infoWindow.setContent(
-      browserHasGeolocation
-        ? "Error: The Geolocation service failed."
-        : "Error: Your browser doesn't support geolocation."
-    );
-    infoWindow.open(map);
-  }
-
-  function outputAsGeoJSON() {
-    // we're only using the Data type here because it can export as GeoJSON
-    var data = new google.maps.Data;
-
-    // add all the polygons in our list of features
-    features.polygons.forEach(function(polygon, i) {
-      data.add({
-        geometry: new google.maps.Data.Polygon([polygon.getPath().getArray()]),
-        properties: {
-          description: 'I am a polygon'
+      // this function gets called when GeoJSON gets loaded
+      function featureAdded(e) {
+        switch (e.feature.getGeometry().getType()) {
+          case 'Polygon':
+            addFeature('Polygon', e.feature.getGeometry().getAt(0).getArray());
+            break;
+          case 'LineString':
+            addFeature('Polyline', e.feature.getGeometry().getArray());
+            break;
+          case 'Point':
+            addFeature('Point', e.feature.getGeometry().get());
         }
-      });
-    });
+        map.data.remove(e.feature);
+      }
 
-    // // and add all the lines 
-    // features.lines.forEach(function(line, i) {
-    //     data.add({
-    //       geometry: new google.maps.Data.LineString(line.getPath().getArray()),
-    //       properties: {
-    //         description: 'I am a line'
-    //       }
-    //     });
-    //   });
-  
-    //   // and finally any markers
-    //   features.markers.forEach(function(marker, i) {
-    //     data.add({
-    //       geometry: new google.maps.Data.Point(marker.getPosition()),
-    //       properties: {
-    //         description: 'I am a marker'
-    //       }
-    //     });
-    //   });
+      function addFeature(type, path) {
+        switch (type) {
+          case 'Polygon':
+            var polygon = new google.maps.Polygon(styles.polygon);
+            polygon.setPath(path);
 
-    // GeoJSONify it
-    data.toGeoJson(function(json) {
-      document.getElementById('#{field.shape_dom_name}').value = JSON.stringify(json.features[0].geometry);
+            // listeners for detecting geometry changes
+            polygon.getPath().addListener('insert_at', someFunction)
+            polygon.getPath().addListener('set_at', someFunction);
+            polygon.getPath().addListener('remove_at', someFunction);
+            polygon.getPath().addListener('dragend', someFunction);
+
+            // delete vertex using right click
+            polygon.addListener('rightclick', function(e) {
+              if (e.vertex == undefined) return;
+              if (polygon.getPath().getLength() == 3) {
+                polygon.setMap(null);
+                features.polygons = features.polygons.filter(isValid);
+              } else {
+                polygon.getPath().removeAt(e.vertex);
+                outputAsGeoJSON();
+              }
+            });
+
+            // add it to our list of features
+            features.polygons.push(polygon);
+
+            // and display it on the map
+            polygon.setMap(map);
+            break;
+
+          case 'Polyline':
+            var line = new google.maps.Polyline(styles.polyline);
+            line.setPath(path);
+
+            line.getPath().addListener('insert_at', someOtherFunction);
+            line.getPath().addListener('set_at', someOtherFunction);
+            line.getPath().addListener('remove_at', someOtherFunction);
+            line.getPath().addListener('dragend', someOtherFunction);
+
+            // allow right-click vertex deletion
+            line.addListener('rightclick', function(e) {
+              if (e.vertex == undefined) return;
+              if (line.getPath().getLength() == 2) {
+                line.setMap(null);
+                features.lines = features.lines.filter(isValid);
+              } else {
+                line.getPath().removeAt(e.vertex);
+                outputAsGeoJSON();
+              }
+            });
+
+            // add it to our list of features
+            features.lines.push(line);
+
+            // and display it on the map
+            line.setMap(map);
+            break;
+
+          case 'Point':
+            var marker = new google.maps.Marker(styles.marker);
+            marker.setPosition(path);
+
+            // make a splashy entrance
+            marker.setAnimation(google.maps.Animation.DROP);
+
+            // detect modifications
+            marker.addListener('drag', function(e) {
+              // unnecessary bouncing just to throw you off
+              marker.setAnimation(google.maps.Animation.BOUNCE);
+            });
+            marker.addListener('dragend', function(e) {
+              // make the bouncing stop
+              marker.setAnimation(null);
+            })
+
+            // allow right-click deletion
+            marker.addListener('rightclick', function(e) {
+              marker.setMap(null);
+              features.markers = features.markers.filter(isValid);
+              outputAsGeoJSON();
+            });
+
+            // add it to our list of features
+            features.markers.push(marker);
+
+            // and display it on the map
+            marker.setMap(map);
+            break;
+        }
+        
+        outputAsGeoJSON();
+      }
+
+      function someFunction(e) {
+        console.log(e, this);
+        outputAsGeoJSON()
+      }
+
+
+      // utility function for reuse any time someone right clicks
+      function isValid(f) {
+        return f.getMap() != null;
+      }
+
+      function polygonFromMyLocation() {
+      
+      }
+
+      function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+        infoWindow.setPosition(pos);
+        infoWindow.setContent(
+          browserHasGeolocation
+            ? "Error: The Geolocation service failed."
+            : "Error: Your browser doesn't support geolocation."
+        );
+        infoWindow.open(map);
+      }
+
+      function outputAsGeoJSON() {
+        // we're only using the Data type here because it can export as GeoJSON
+        var data = new google.maps.Data;
+
+        // add all the polygons in our list of features
+        features.polygons.forEach(function(polygon, i) {
+          data.add({
+            geometry: new google.maps.Data.Polygon([polygon.getPath().getArray()]),
+            properties: {
+              description: 'I am a polygon'
+            }
+          });
+        });
+
+        // GeoJSONify it
+        data.toGeoJson(function(json) {
+          document.getElementById('#{field.shape_dom_name}').value = JSON.stringify(json.features[0].geometry);
+        });
+      } 
     });
-  } 
+  }
 
 = javascript_include_tag ("https://maps.googleapis.com/maps/api/js?key=#{field.google_api_key}&libraries=geometry,drawing&&callback=initShapeField")
 
