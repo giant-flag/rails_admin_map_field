@@ -8,13 +8,41 @@
         lines: [],
         markers: []
       };
+      var area_type = '#{ raw field.area_type }' 
+      area_type = area_type == 'respek' ? 'green' : area_type;
+      
+      var colours = {
+        green: {
+          fillColor:'#00ff80',
+          strokeColor:'#008840'
+          }, 
+        red: {
+          fillColor:'#ff3300',
+          strokeColor:'#880000'}, 
+        blue: {
+          fillColor:'#003cff',
+          strokeColor:'#001988'}, 
+        yellow: {
+          fillColor:'#ffd900',
+          strokeColor:'#886800'}, 
+        black: {
+          fillColor:'#000000',
+          strokeColor:'#000'}, 
+        white: {
+          fillColor:'#000000',
+          strokeColor:'#fff'}, 
+      }
+
+      function fillColor(area_type, el) {
+        return colours[area_type][el || 'fillColor'];
+      }
 
       // set default drawing styles
       var styles = {
         polygon: {
-          fillColor: '#00ff80',
+          fillColor: fillColor(area_type ,'fillColor'),
           fillOpacity: 0.3,
-          strokeColor: '#008840',
+          strokeColor: fillColor(area_type,'strokeColor'),
           strokeWeight: 1,
           clickable: true,
           editable: true,

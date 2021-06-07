@@ -45,6 +45,10 @@ module RailsAdmin::Config::Fields::Types
       'ROADMAP'
     end
 
+    register_instance_option(:colour_field) do
+      'area_type'
+    end
+
     # Latitude value to display in the map if the latitude attribute is nil
     register_instance_option(:default_latitude) do
       -32.2988067
@@ -95,6 +99,10 @@ module RailsAdmin::Config::Fields::Types
 
     def record_id
       bindings[:object][:id]
+    end
+
+    def area_type
+      abstract_model.model.attribute_types[colour_field].serialize(bindings[:object][colour_field])
     end
 
     def shape

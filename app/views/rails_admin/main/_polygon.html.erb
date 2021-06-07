@@ -14,13 +14,67 @@
 
       var map = new google.maps.Map(document.getElementById("shape_map"), myOptions);
 
+          var area_type = '<%=  raw field.area_type %>' 
+      area_type = area_type == 'respek' ? 'green' : area_type;
+      
+      var colours = {
+        green: {
+          fillColor:'#00ff80',
+          strokeColor:'#008840'
+          }, 
+        red: {
+          fillColor:'#ff3300',
+          strokeColor:'#880000'}, 
+        blue: {
+          fillColor:'#003cff',
+          strokeColor:'#001988'}, 
+        yellow: {
+          fillColor:'#ffd900',
+          strokeColor:'#886800'}, 
+        black: {
+          fillColor:'#000000',
+          strokeColor:'#000'}, 
+        white: {
+          fillColor:'#000000',
+          strokeColor:'#fff'}, 
+      }
+
+      function fillColor(area_type, el) {
+        return colours[area_type][el || 'fillColor'];
+      }
+
+      // set default drawing styles
+      var styles = {
+        polygon: {
+          fillColor: fillColor(area_type ,'fillColor'),
+          fillOpacity: 0.3,
+          strokeColor: fillColor(area_type,'strokeColor'),
+          strokeWeight: 1,
+          zIndex: 1
+        },
+        polyline: {
+          strokeColor: '#ffff00',
+          strokeWeight: 3,
+          clickable: true,
+          editable: true,
+          zIndex: 2
+        },
+        marker: {
+          clickable: true,
+          draggable: true,
+          zIndex: 3
+        }
+      }
+
       var locations = {
             "type": "FeatureCollection",
             "features": [
                 { "type": "Feature", "properties": { "shape": "Polygon", "name": "Unnamed Layer", "category": "default" }, "geometry": <%= raw field.geo_json %>}
             ]
         };
-      map.data.addGeoJson(locations)
+      map.data.addGeoJson(locations);
+
+      map.data.setStyle(styles.polygon);
 
     });
   }
