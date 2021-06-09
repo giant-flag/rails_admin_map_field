@@ -1,5 +1,5 @@
 <script>
-  function initShapeField() {
+  function initShapeField<%= field.record_id %>() {
     jQuery(function() {
       var latitude = <%= field.center.y %>;
       var longitude = <%= field.center.x %>;
@@ -12,7 +12,7 @@
         scrollwheel: false
       };
 
-      var map = new google.maps.Map(document.getElementById("shape_map"), myOptions);
+      var map = new google.maps.Map(document.getElementById("<%="shape_map_#{field.record_id}"%>"), myOptions);
 
           var area_type = '<%=  raw field.area_type %>' 
       area_type = area_type == 'respek' ? 'green' : area_type;
@@ -80,7 +80,7 @@
   }
 </script>
 
-<%= javascript_include_tag "https://maps.googleapis.com/maps/api/js?key=#{field.google_api_key}&sensor=false&callback=initShapeField" %>
+<%= javascript_include_tag "https://maps.googleapis.com/maps/api/js?key=#{field.google_api_key}&sensor=false&callback=initShapeField#{field.record_id}" %>
 
-<div id="shape_map" style="margin: 20px 0; padding: 0; height: <%= field.map_height %>px; width: 100%;">
+<div id="<%="shape_map_#{field.record_id}"%>" style="margin: 20px 0; padding: 0; height: <%= field.map_height %>px; width: 100%;">
 </div>

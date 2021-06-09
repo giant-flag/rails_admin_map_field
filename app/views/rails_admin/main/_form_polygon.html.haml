@@ -76,7 +76,7 @@
 
       var map = {};
 
-      map = new google.maps.Map(document.getElementById("#{field.dom_name}"), myOptions);
+      map = new google.maps.Map(document.getElementById("#{field.dom_name}#{field.record_id}"), myOptions);
 
       map.data.addListener('addfeature', featureAdded);
 
@@ -335,7 +335,7 @@
   = "##{field.dom_name} label {width: auto;display: inline;}"
   = "##{field.dom_name} img {max-width: none;}"
 
-%div.ramf-map-container{:id => field.dom_name, :style => "margin: 20px 0; padding: 0; height: #{field.map_height}px; float: left; width: 100%;"}
+%div.ramf-map-container{:id => "#{field.dom_name}#{field.record_id}", :style => "margin: 20px 0; padding: 0; height: #{field.map_height}px; float: left; width: 100%;"}
 %div.control-group
   %div.controls
     = form.send :hidden_field, field.name, :id => field.shape_dom_name, :class => "form-control"
