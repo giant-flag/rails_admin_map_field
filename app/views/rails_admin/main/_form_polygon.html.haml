@@ -35,8 +35,9 @@
           strokeColor:'#fff'}, 
       }
 
-      function fillColor(area_type, el) {
-        return colours[area_type][el || 'fillColor'];
+      function fillColor(style, el) {
+        style = style.length ? style : 'green';
+        return colours[style][el || 'fillColor'];
       }
 
       // set default drawing styles

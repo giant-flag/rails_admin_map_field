@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency("yard", ">= 0.6")
 
   s.name              = "rails_admin_map_field"
-  s.version           = "0.1.6"
+  s.version           = "0.1.7"
   s.platform          = Gem::Platform::RUBY
   s.authors           = ["Jason Langenauer","Jules Laplace", "Ephraim Moss"]
   s.email             = ["jason@jasonlangenauer.com","jules@okfoc.us","ephraim@goseamless.co.za"]
