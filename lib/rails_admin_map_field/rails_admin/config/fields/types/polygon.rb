@@ -5,7 +5,7 @@ module RailsAdmin::Config::Fields::Types
 
 
     def parse_value(value)
-      geo_factory =  RGeo::Geos.factory(srid: 4326)
+      geo_factory = RGeo::Geos.factory(srid: 4326)
       RGeo::GeoJSON.decode(value, geo_factory: geo_factory, json_parser: :json)
     end
 
@@ -111,12 +111,10 @@ module RailsAdmin::Config::Fields::Types
 
     def center     
       if bindings[:object][name]
-        puts bindings[:object][name].centroid
         bindings[:object][name].centroid
       else
         factory = RGeo::Geographic.spherical_factory(:srid => 4326)
         factory.point(default_longitude,default_latitude)
-        
       end
     end
 
@@ -125,13 +123,8 @@ module RailsAdmin::Config::Fields::Types
     end
 
     private
-
-    def set_geometry(json)
-      @shape = RGeo::GeoJSON.decode(json, json_parser: :json)
-    end
     def get_geometry
-      @shape ||= RGeo::GeoJSON.encode(bindings[:object][name])
-      @shape
+      RGeo::GeoJSON.encode(bindings[:object][name])
     end
   end
 end

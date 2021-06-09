@@ -1,86 +1,83 @@
+<div id="<%="shape_map_#{field.record_id}"%>" style="margin: 20px 0; padding: 0; height: <%= field.map_height %>px; width: 100%;">
+</div>
+
 <script>
   function initShapeField<%= field.record_id %>() {
-    jQuery(function() {
-      var latitude = <%= field.center.y %>;
-      var longitude = <%= field.center.x %>;
-      var latlng = new google.maps.LatLng(latitude, longitude);
+    var latitude = <%= field.center.y %>;
+    var longitude = <%= field.center.x %>;
+    var latlng = new google.maps.LatLng(latitude, longitude);
 
-      var myOptions = {
-        zoom: <%= field.default_zoom_level%>,
-        center: latlng,
-        mapTypeId: google.maps.MapTypeId.<%= field.map_type%>,
-        scrollwheel: false
+    var myOptions = {
+      zoom: <%= field.default_zoom_level%>,
+      center: latlng,
+      mapTypeId: google.maps.MapTypeId.<%= field.map_type%>,
+      scrollwheel: false
+    };
+
+    var map = new google.maps.Map(document.getElementById("<%="shape_map_#{field.record_id}"%>"), myOptions);
+
+        var area_type = '<%=  raw field.area_type %>' 
+    area_type = area_type == 'respek' ? 'green' : area_type;
+    
+    var colours = {
+      green: {
+        fillColor:'#00ff80',
+        strokeColor:'#008840'
+        }, 
+      red: {
+        fillColor:'#ff3300',
+        strokeColor:'#880000'}, 
+      blue: {
+        fillColor:'#003cff',
+        strokeColor:'#001988'}, 
+      yellow: {
+        fillColor:'#ffd900',
+        strokeColor:'#886800'}, 
+      black: {
+        fillColor:'#000000',
+        strokeColor:'#000'}, 
+      white: {
+        fillColor:'#000000',
+        strokeColor:'#fff'}, 
+    }
+
+    function fillColor(area_type, el) {
+      return colours[area_type][el || 'fillColor'];
+    }
+
+    // set default drawing styles
+    var styles = {
+      polygon: {
+        fillColor: fillColor(area_type ,'fillColor'),
+        fillOpacity: 0.3,
+        strokeColor: fillColor(area_type,'strokeColor'),
+        strokeWeight: 1,
+        zIndex: 1
+      },
+      polyline: {
+        strokeColor: '#ffff00',
+        strokeWeight: 3,
+        clickable: true,
+        editable: true,
+        zIndex: 2
+      },
+      marker: {
+        clickable: true,
+        draggable: true,
+        zIndex: 3
+      }
+    }
+
+    var locations = {
+          "type": "FeatureCollection",
+          "features": [
+              { "type": "Feature", "properties": { "shape": "Polygon", "name": "Unnamed Layer", "category": "default" }, "geometry": <%= raw field.geo_json %>}
+          ]
       };
+    map.data.addGeoJson(locations);
 
-      var map = new google.maps.Map(document.getElementById("<%="shape_map_#{field.record_id}"%>"), myOptions);
-
-          var area_type = '<%=  raw field.area_type %>' 
-      area_type = area_type == 'respek' ? 'green' : area_type;
-      
-      var colours = {
-        green: {
-          fillColor:'#00ff80',
-          strokeColor:'#008840'
-          }, 
-        red: {
-          fillColor:'#ff3300',
-          strokeColor:'#880000'}, 
-        blue: {
-          fillColor:'#003cff',
-          strokeColor:'#001988'}, 
-        yellow: {
-          fillColor:'#ffd900',
-          strokeColor:'#886800'}, 
-        black: {
-          fillColor:'#000000',
-          strokeColor:'#000'}, 
-        white: {
-          fillColor:'#000000',
-          strokeColor:'#fff'}, 
-      }
-
-      function fillColor(area_type, el) {
-        return colours[area_type][el || 'fillColor'];
-      }
-
-      // set default drawing styles
-      var styles = {
-        polygon: {
-          fillColor: fillColor(area_type ,'fillColor'),
-          fillOpacity: 0.3,
-          strokeColor: fillColor(area_type,'strokeColor'),
-          strokeWeight: 1,
-          zIndex: 1
-        },
-        polyline: {
-          strokeColor: '#ffff00',
-          strokeWeight: 3,
-          clickable: true,
-          editable: true,
-          zIndex: 2
-        },
-        marker: {
-          clickable: true,
-          draggable: true,
-          zIndex: 3
-        }
-      }
-
-      var locations = {
-            "type": "FeatureCollection",
-            "features": [
-                { "type": "Feature", "properties": { "shape": "Polygon", "name": "Unnamed Layer", "category": "default" }, "geometry": <%= raw field.geo_json %>}
-            ]
-        };
-      map.data.addGeoJson(locations);
-
-      map.data.setStyle(styles.polygon);
-
-    });
+    map.data.setStyle(styles.polygon);
   }
 </script>
 
-<%= javascript_include_tag "https://maps.googleapis.com/maps/api/js?key=#{field.google_api_key}&sensor=false&callback=initShapeField#{field.record_id}" %>
-
-<div id="<%="shape_map_#{field.record_id}"%>" style="margin: 20px 0; padding: 0; height: <%= field.map_height %>px; width: 100%;">
-</div>
+<%= javascript_include_tag "https://maps.googleapis.com/maps/api/js?key=#{field.google_api_key}&callback=initShapeField#{field.record_id}" %>

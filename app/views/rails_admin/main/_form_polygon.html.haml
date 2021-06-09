@@ -1,3 +1,5 @@
+%div.ramf-map-container{:id => "#{field.dom_name}#{field.record_id}", :style => "margin: 20px 0; padding: 0; height: #{field.map_height}px; float: left; width: 100%;"}
+
 :javascript
   function initShapeField() {
     jQuery(function(){
@@ -122,6 +124,8 @@
             ]
           };
 
+      window.gf_map = map;
+      console.log(locations);
       if (locations.features[0].geometry) map.data.addGeoJson(locations)
 
       infoWindow = new google.maps.InfoWindow();
@@ -154,27 +158,10 @@
           handleLocationError(false, infoWindow, map.getCenter());
         }
       });
-    
-
-      // GeoJSON containing previously stored data (optional) 
-      var imported = {
-        type: "FeatureCollection",
-        features: [{
-          "type": "Feature",
-          "geometry": {
-            "type": "Point",
-            "coordinates": [
-              -73.985603, 40.748429
-            ],
-          },
-          properties: {
-            activity: "Entry",
-          }
-        }, ]
-      };
 
       // this function gets called when GeoJSON gets loaded
       function featureAdded(e) {
+        console.log(e.feature);
         switch (e.feature.getGeometry().getType()) {
           case 'Polygon':
             addFeature('Polygon', e.feature.getGeometry().getAt(0).getArray());
@@ -335,7 +322,6 @@
   = "##{field.dom_name} label {width: auto;display: inline;}"
   = "##{field.dom_name} img {max-width: none;}"
 
-%div.ramf-map-container{:id => "#{field.dom_name}#{field.record_id}", :style => "margin: 20px 0; padding: 0; height: #{field.map_height}px; float: left; width: 100%;"}
 %div.control-group
   %div.controls
     = form.send :hidden_field, field.name, :id => field.shape_dom_name, :class => "form-control"
