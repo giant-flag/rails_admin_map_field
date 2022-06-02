@@ -1,0 +1,331 @@
+<div class="ramf-map-container" id="<%= field.dom_name %><%= field.record_id %>" style="margin: 20px 0; padding: 0; height: <%= field.map_height %>px; float: left; width: 100%;"></div>
+<script>
+  
+  function initShapeField() {
+    jQuery(function(){
+   
+      // this will fill with map data as you import it from geojson or draw
+      var features = {
+        polygons: [],
+        lines: [],
+        markers: []
+      };
+      var area_type = '#{ raw field.area_type }' 
+      area_type = area_type == 'respek' ? 'green' : area_type;
+      
+      var colours = {
+        green: {
+          fillColor:'#00ff80',
+          strokeColor:'#008840'
+          }, 
+        red: {
+          fillColor:'#ff3300',
+          strokeColor:'#880000'}, 
+        blue: {
+          fillColor:'#003cff',
+          strokeColor:'#001988'}, 
+        yellow: {
+          fillColor:'#ffd900',
+          strokeColor:'#886800'}, 
+        black: {
+          fillColor:'#000000',
+          strokeColor:'#000'}, 
+        white: {
+          fillColor:'#000000',
+          strokeColor:'#fff'}, 
+      }
+
+      function fillColor(style, el) {
+        style = style.length ? style : 'green';
+        return colours[style][el || 'fillColor'];
+      }
+
+      // set default drawing styles
+      var styles = {
+        polygon: {
+          fillColor: fillColor(area_type ,'fillColor'),
+          fillOpacity: 0.3,
+          strokeColor: fillColor(area_type,'strokeColor'),
+          strokeWeight: 1,
+          clickable: true,
+          editable: true,
+          zIndex: 1
+        },
+        polyline: {
+          strokeColor: '#ffff00',
+          strokeWeight: 3,
+          clickable: true,
+          editable: true,
+          zIndex: 2
+        },
+        marker: {
+          clickable: true,
+          draggable: true,
+          zIndex: 3
+        }
+      }
+
+      var latitude = #{field.center.y}; 
+      var longitude = #{field.center.x}; 
+      var latlng = new google.maps.LatLng(latitude, longitude);
+      var geocoder = new google.maps.Geocoder();
+
+      var myOptions = {
+        zoom: #{field.default_zoom_level},
+        center: latlng,
+        mapTypeId: google.maps.MapTypeId.#{field.map_type},
+        scrollwheel: false
+      };
+
+      var map = {};
+
+      map = new google.maps.Map(document.getElementById("#{field.dom_name}#{field.record_id}"), myOptions);
+
+      map.data.addListener('addfeature', featureAdded);
+
+
+       // initialize drawing tools
+      var drawingManager = new google.maps.drawing.DrawingManager({
+        // uncomment below line to set default drawing mode
+        // drawingMode: 'marker',  
+        drawingControl: true,
+        drawingControlOptions: {
+          position: google.maps.ControlPosition.TOP_CENTER,
+          drawingModes: ['polygon']
+        },
+        polygonOptions: styles.polygon
+      });
+
+      drawingManager.setMap(map);
+
+      // for each drawing mode, set a listener for end of drawing
+      drawingManager.addListener('polygoncomplete', function(polygon) {
+        // delete drawing if doesn't have enough points
+        if (polygon.getPath().getLength() < 3) {
+          alert('Polygons must have 3 or more points.');
+          polygon.getPath().clear();
+        }
+        // otherwise create new feature and delete drawing
+        else {
+          addFeature('Polygon', polygon.getPath());
+          polygon.setMap(null);
+        }
+      });
+      
+      var locations = {
+            "type": "FeatureCollection",
+            "features": [
+                { 
+                  "type": "Feature", 
+                  "id": "#{field.dom_name}#{field.record_id}", 
+                  "properties": { "shape": "Polygon", "category": "default" }, 
+                  "editable": true, 
+                  "geometry": #{ raw field.geo_json }
+                }
+            ]
+          };
+
+      window.gf_map = map;
+      console.log(locations);
+      if (locations.features[0].geometry) map.data.addGeoJson(locations)
+
+      infoWindow = new google.maps.InfoWindow();
+      const locationButton = document.createElement("button");
+      locationButton.textContent = "Pan to Current Location";
+      locationButton.classList.add("custom-map-control-button");
+      map.controls[google.maps.ControlPosition.TOP_CENTER].push(locationButton);
+      locationButton.addEventListener("click", () => {
+        event.preventDefault();
+        if (navigator.geolocation) {
+          //setInterval(function(){ 
+            navigator.geolocation.getCurrentPosition(
+              (position) => {
+                const pos = {
+                  lat: position.coords.latitude,
+                  lng: position.coords.longitude,
+                };
+                infoWindow.setPosition(pos);
+                infoWindow.setContent("Location found.");
+                infoWindow.open(map);
+                map.setCenter(pos);
+              },
+              () => {
+                handleLocationError(true, infoWindow, map.getCenter());
+              }
+            );
+          //}, 10000);
+        } else {
+          // Browser doesn't support Geolocation
+          handleLocationError(false, infoWindow, map.getCenter());
+        }
+      });
+
+      // this function gets called when GeoJSON gets loaded
+      function featureAdded(e) {
+        console.log(e.feature);
+        switch (e.feature.getGeometry().getType()) {
+          case 'Polygon':
+            addFeature('Polygon', e.feature.getGeometry().getAt(0).getArray());
+            break;
+          case 'LineString':
+            addFeature('Polyline', e.feature.getGeometry().getArray());
+            break;
+          case 'Point':
+            addFeature('Point', e.feature.getGeometry().get());
+        }
+        map.data.remove(e.feature);
+      }
+
+      function addFeature(type, path) {
+        switch (type) {
+          case 'Polygon':
+            var polygon = new google.maps.Polygon(styles.polygon);
+            polygon.setPath(path);
+
+            // listeners for detecting geometry changes
+            polygon.getPath().addListener('insert_at', someFunction)
+            polygon.getPath().addListener('set_at', someFunction);
+            polygon.getPath().addListener('remove_at', someFunction);
+            polygon.getPath().addListener('dragend', someFunction);
+
+            // delete vertex using right click
+            polygon.addListener('rightclick', function(e) {
+              if (e.vertex == undefined) return;
+              if (polygon.getPath().getLength() == 3) {
+                polygon.setMap(null);
+                features.polygons = features.polygons.filter(isValid);
+              } else {
+                polygon.getPath().removeAt(e.vertex);
+                outputAsGeoJSON();
+              }
+            });
+
+            // add it to our list of features
+            features.polygons.push(polygon);
+
+            // and display it on the map
+            polygon.setMap(map);
+            break;
+
+          case 'Polyline':
+            var line = new google.maps.Polyline(styles.polyline);
+            line.setPath(path);
+
+            line.getPath().addListener('insert_at', someOtherFunction);
+            line.getPath().addListener('set_at', someOtherFunction);
+            line.getPath().addListener('remove_at', someOtherFunction);
+            line.getPath().addListener('dragend', someOtherFunction);
+
+            // allow right-click vertex deletion
+            line.addListener('rightclick', function(e) {
+              if (e.vertex == undefined) return;
+              if (line.getPath().getLength() == 2) {
+                line.setMap(null);
+                features.lines = features.lines.filter(isValid);
+              } else {
+                line.getPath().removeAt(e.vertex);
+                outputAsGeoJSON();
+              }
+            });
+
+            // add it to our list of features
+            features.lines.push(line);
+
+            // and display it on the map
+            line.setMap(map);
+            break;
+
+          case 'Point':
+            var marker = new google.maps.Marker(styles.marker);
+            marker.setPosition(path);
+
+            // make a splashy entrance
+            marker.setAnimation(google.maps.Animation.DROP);
+
+            // detect modifications
+            marker.addListener('drag', function(e) {
+              // unnecessary bouncing just to throw you off
+              marker.setAnimation(google.maps.Animation.BOUNCE);
+            });
+            marker.addListener('dragend', function(e) {
+              // make the bouncing stop
+              marker.setAnimation(null);
+            })
+
+            // allow right-click deletion
+            marker.addListener('rightclick', function(e) {
+              marker.setMap(null);
+              features.markers = features.markers.filter(isValid);
+              outputAsGeoJSON();
+            });
+
+            // add it to our list of features
+            features.markers.push(marker);
+
+            // and display it on the map
+            marker.setMap(map);
+            break;
+        }
+        
+        outputAsGeoJSON();
+      }
+
+      function someFunction(e) {
+        console.log(e, this);
+        outputAsGeoJSON()
+      }
+
+
+      // utility function for reuse any time someone right clicks
+      function isValid(f) {
+        return f.getMap() != null;
+      }
+
+      function polygonFromMyLocation() {
+      
+      }
+
+      function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+        infoWindow.setPosition(pos);
+        infoWindow.setContent(
+          browserHasGeolocation
+            ? "Error: The Geolocation service failed."
+            : "Error: Your browser doesn't support geolocation."
+        );
+        infoWindow.open(map);
+      }
+
+      function outputAsGeoJSON() {
+        // we're only using the Data type here because it can export as GeoJSON
+        var data = new google.maps.Data;
+
+        // add all the polygons in our list of features
+        features.polygons.forEach(function(polygon, i) {
+          data.add({
+            geometry: new google.maps.Data.Polygon([polygon.getPath().getArray()]),
+            properties: {
+              description: 'I am a polygon'
+            }
+          });
+        });
+
+        // GeoJSONify it
+        data.toGeoJson(function(json) {
+          document.getElementById('#{field.shape_dom_name}').value = JSON.stringify(json.features[0].geometry);
+        });
+      } 
+    });
+  }
+
+
+</script>
+<%= javascript_include_tag ("https://maps.googleapis.com/maps/api/js?key=#{field.google_api_key}&libraries=geometry,drawing&&callback=initShapeField") %>
+<style>
+  <%= "##{field.dom_name} label {width: auto;display: inline;}" %>
+  <%= "##{field.dom_name} img {max-width: none;}" %>
+</style>
+<div class="control-group">
+  <div class="controls">
+    <%= form.send :hidden_field, field.name, :id => field.shape_dom_name, :class => "form-control" %>
+  </div>
+</div>
