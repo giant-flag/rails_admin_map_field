@@ -109,9 +109,12 @@ module RailsAdmin::Config::Fields::Types
       bindings[:object][shape_field]
     end
 
-    def center     
+    def get_center 
+      puts '-----center------'    
       if bindings[:object][name]
-        bindings[:object][name].centroid
+      #   puts         bindings[:object][center]
+        # puts bindings[:object].inspect
+        bindings[:object].center
       else
         factory = RGeo::Geographic.spherical_factory(:srid => 4326)
         factory.point(default_longitude,default_latitude)

@@ -10,7 +10,7 @@
         lines: [],
         markers: []
       };
-      var area_type = '#{ raw field.area_type }' 
+      var area_type = '<%= raw field.area_type %>' 
       area_type = area_type == 'respek' ? 'green' : area_type;
       
       var colours = {
@@ -65,21 +65,21 @@
         }
       }
 
-      var latitude = #{field.center.y}; 
-      var longitude = #{field.center.x}; 
+      var latitude = <%= field.get_center.y %>;
+      var longitude = <%= field.get_center.x %>;
       var latlng = new google.maps.LatLng(latitude, longitude);
       var geocoder = new google.maps.Geocoder();
 
       var myOptions = {
-        zoom: #{field.default_zoom_level},
+        zoom: <%= field.default_zoom_level %>,
         center: latlng,
-        mapTypeId: google.maps.MapTypeId.#{field.map_type},
+        mapTypeId: google.maps.MapTypeId.<%= field.map_type %>,
         scrollwheel: false
       };
 
       var map = {};
 
-      map = new google.maps.Map(document.getElementById("#{field.dom_name}#{field.record_id}"), myOptions);
+      map = new google.maps.Map(document.getElementById("<%=field.dom_name%><%=field.record_id%>"), myOptions);
 
       map.data.addListener('addfeature', featureAdded);
 
@@ -117,10 +117,10 @@
             "features": [
                 { 
                   "type": "Feature", 
-                  "id": "#{field.dom_name}#{field.record_id}", 
+                  "id": "<%= field.dom_name%><%= field.record_id%>", 
                   "properties": { "shape": "Polygon", "category": "default" }, 
                   "editable": true, 
-                  "geometry": #{ raw field.geo_json }
+                  "geometry": <%= raw field.geo_json %>
                 }
             ]
           };
@@ -311,7 +311,7 @@
 
         // GeoJSONify it
         data.toGeoJson(function(json) {
-          document.getElementById('#{field.shape_dom_name}').value = JSON.stringify(json.features[0].geometry);
+          document.getElementById('<%=field.shape_dom_name%>').value = JSON.stringify(json.features[0].geometry);
         });
       } 
     });

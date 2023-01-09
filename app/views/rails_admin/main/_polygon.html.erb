@@ -3,8 +3,8 @@
 
 <script>
   function initShapeField<%= field.record_id %>() {
-    var latitude = <%= field.center.y %>;
-    var longitude = <%= field.center.x %>;
+    var latitude = <%= field.get_center.y%>;
+    var longitude = <%= field.get_center.x %>;
     var latlng = new google.maps.LatLng(latitude, longitude);
 
     var myOptions = {
